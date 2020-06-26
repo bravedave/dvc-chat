@@ -11,12 +11,11 @@
 namespace dvc\chat;
 
 class config extends \config {
-	const dvcchat_db_version = 0.01;
+	const dvcchat_db_version = 0.02;
 
     const label = 'Chat';
 
 	static protected $_DVCCHAT_VERSION = 0;
-	static $DVC_CHAT_REFRESH = 5000;
 
 	static protected function dvcchat_version( $set = null) {
 		$ret = self::$_DVCCHAT_VERSION;

@@ -37,24 +37,66 @@ class controller extends \Controller {
 		$action = $this->getPost('action');
 
 		if ( 'get' == $action) {
+			$local = (int)$this->getPost( 'local');
+			$remote = (int)$this->getPost( 'remote');
+			$version = (int)$this->getPost( 'version');
+
 			$dao = new dao\dvc_chat;
+			$_version = $dao->version();
+			// \sys::logger( sprintf('<%s> %s', $_version, __METHOD__));
+
+			if ( $_version <= $version) {
+				Json::ack( $action)
+					->add('version', $_version)
+					->add('unseen', $dao->getUnseen( $local))
+					->add('data', []);
+
+			}
+			else {
+				$chats = $dao->getRecent( $local, $remote);
+				Json::ack( $action)
+					->add('version', $_version)
+					->add('unseen', $dao->getUnseen( $local))
+					->add('data', $chats);
+
+			}
+
+        }
+		elseif ( 'get-unseen' == $action) {
+			$local = (int)$this->getPost( 'local');
+			$remote = (int)$this->getPost( 'remote');
+
+			$dao = new dao\dvc_chat;
+			$_version = $dao->version();
+
 			Json::ack( $action)
-				->add('data', $dao->getRecent());
-
-
+				->add('unseen', $dao->getUnseen( $local));
 
         }
 		elseif ( 'post' == $action) {
+			$local = (int)$this->getPost( 'local');
+			$version = (int)$this->getPost( 'version');
 			$a = [
 				'created' => \db::dbTimeStamp(),
 				'message' => $this->getPost( 'message'),
-				'sender' => $this->getPost( 'sender'),
-				'target' => $this->getPost( 'target')
+				'local' => $local,
+				'remote' => $this->getPost( 'remote')
 
 			];
 
 			$dao = new dao\dvc_chat;
-			$dao->Insert($a);
+			$id = $dao->Insert($a);
+			$dao->SeenMark( $local, $id);
+
+            Json::ack( $action);
+
+        }
+		elseif ( 'seen-mark' == $action) {
+			$local = (int)$this->getPost( 'local');
+			$version = (int)$this->getPost( 'version');
+
+			$dao = new dao\dvc_chat;
+			$dao->SeenMark( $local, $version);
 
             Json::ack( $action);
 
@@ -66,15 +108,28 @@ class controller extends \Controller {
 	protected function _index() {
         $this->render([
             'title' => $this->title = $this->label,
-            'primary' => 'home',
+            'primary' => 'blank',
             'secondary' => ['blank']
 
         ]);
 
     }
 
-    function chatbox() {
-        $this->load( 'chat-box');
+    function chatbox( $remote = 0, $local = 0) {
+		if ( $remote || $local) {
+			$this->data = (object)[
+				'local' => user::getUser( (int)$local),
+				'remote' => user::getUser((int)$remote)
+
+			];
+
+			$this->load( 'chat-box');
+
+		}
+		else {
+			$this->load( 'chat-box-remote-invalid');
+
+		}
 
     }
 

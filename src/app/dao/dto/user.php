@@ -8,7 +8,11 @@
  *
 */
 
-namespace dvc\chat;
+namespace dvc\chat\dao\dto;
 
-class sys extends \sys {}
+class user {
+    public $id = 0;
 
+    public $name = '';
+
+}

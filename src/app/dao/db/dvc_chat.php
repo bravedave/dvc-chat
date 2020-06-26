@@ -10,13 +10,15 @@
 
 namespace dvc\chat\dao;
 
-use dvc\chat\sys;
+use sys;
 
 $dbc = sys::dbCheck('dvc_chat');
 
 $dbc->defineField( 'created', 'datetime');
-$dbc->defineField( 'sender', 'bigint');
-$dbc->defineField( 'target', 'bigint');
+$dbc->defineField( 'local', 'bigint');
+$dbc->defineField( 'local_seen', 'tinyint');
+$dbc->defineField( 'remote', 'bigint');
+$dbc->defineField( 'remote_seen', 'tinyint');
 $dbc->defineField( 'message', 'text');
 
 $dbc->check();
