@@ -72,7 +72,12 @@ class controller extends \Controller {
 			Json::ack( $action)
 				->add('unseen', $dao->getUnseen( $local));
 
-        }
+		}
+		elseif ( 'get-users' == $action) {
+			Json::ack( $action)
+				->add('users', users::getAll());
+
+		}
 		elseif ( 'post' == $action) {
 			$local = (int)$this->getPost( 'local');
 			$version = (int)$this->getPost( 'version');
@@ -109,7 +114,7 @@ class controller extends \Controller {
         $this->render([
             'title' => $this->title = $this->label,
             'primary' => 'blank',
-            'secondary' => ['blank']
+            'secondary' => ['remotes']
 
         ]);
 
@@ -118,8 +123,8 @@ class controller extends \Controller {
     function chatbox( $remote = 0, $local = 0) {
 		if ( $remote || $local) {
 			$this->data = (object)[
-				'local' => user::getUser( (int)$local),
-				'remote' => user::getUser((int)$remote)
+				'local' => users::getUser( (int)$local),
+				'remote' => users::getUser((int)$remote)
 
 			];
 

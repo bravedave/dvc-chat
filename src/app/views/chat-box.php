@@ -16,7 +16,17 @@ use strings;
 
 <div class="card m-1" style="width: 18rem;">
     <div class="card-header d-flex">
-        <?= $this->data->remote->name ?>
+        <?php
+        if ( 0 == $this->data->remote->id) {
+            printf('%s => %s',
+                $this->data->local->name,
+                $this->data->remote->name);
+
+        }
+        else {
+            print $this->data->remote->name;
+
+        }   ?>
         <span class="badge badge-light d-none" id="<?= $_unseen = strings::rand() ?>">&nbsp;</span>
         <button type="button" class="btn btn-light ml-auto" style="margin: -12px -20px -12px 0;"
             data-toggle="collapse"

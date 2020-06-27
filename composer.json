@@ -1,10 +1,9 @@
 {
-    "name": "bravedave/mvp",
-    "description": "Minimum Viable Product",
+    "name": "bravedave/dvc-chat",
+    "description": "Simple Chat iDEA",
     "minimum-stability": "dev",
     "prefer-stable": true,
     "license": "MIT",
-
     "authors": [
         {
             "name": "Dave Bray",
