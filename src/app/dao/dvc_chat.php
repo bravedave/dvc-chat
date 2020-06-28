@@ -15,18 +15,23 @@ class dvc_chat extends _dao {
 	protected $_db_name = 'dvc_chat';
 
 	public function getRecent( int $local, int $remote, int $limit = 10) : array {
-		$_sql = sprintf( 'SELECT
+		$_sql = sprintf(
+			'SELECT
 				*
 			FROM
 				`%s`
-				WHERE id IN (SELECT id FROM `%s` WHERE `local` IN (%d,%d) AND `remote` IN (%d,%d) ORDER BY ID DESC LIMIT %d)',
-			$this->_db_name,
+			WHERE
+				`local` IN (%d,%d)
+				AND `remote` IN (%d,%d)
+			ORDER
+				BY ID DESC
+			LIMIT %d',
 			$this->_db_name,
 			$local,$remote,
 			$local,$remote,
 			$limit);
 
-		\sys::logSQL( $_sql);
+		// \sys::logSQL( $_sql);
 
 		if ( $res = $this->Result( $_sql)) {
 			return $res->dtoSet();
