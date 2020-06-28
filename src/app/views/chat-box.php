@@ -96,7 +96,12 @@ use strings;
 
         });
 
-        $('#<?= $_form ?> textarea[name="message"]').on('keydown', (e) => {
+        $('#<?= $_form ?> textarea[name="message"]')
+        .on('focus', (e) => {
+            $('#<?= $_form ?>').trigger( 'seen-mark');
+
+        })
+        .on('keydown', (e) => {
             if (e.ctrlKey && e.keyCode == 13) {
                 $('#<?= $_form ?>').submit();
 
