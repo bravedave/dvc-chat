@@ -8,7 +8,7 @@ Just an iDEA
 
     _in development we talk to ourselves so this is quite confusing.._
 
-* This is developed to run _standalone_, which if you want to talk to yourself is great, but you will likely want to talk to someone else, so to activate this - this example does this in *src\app\views\footer.php*
+* This is developed to run _standalone_, which if you want to talk to yourself is great, but you will likely want to talk to someone else, so to activate this - this example does this in **src\app\views\footer.php**
 
 1. A container is created to received the chats - there could be a number of remotes we are talking to
 2. Javascript periodically checks for messages and displays the chat dialog
