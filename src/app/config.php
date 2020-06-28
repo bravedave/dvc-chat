@@ -11,7 +11,7 @@
 namespace dvc\chat;
 
 class config extends \config {
-	const dvcchat_db_version = 0.02;
+	const dvcchat_db_version = 0.03;
 
     const label = 'Chat';
 

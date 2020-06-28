@@ -15,9 +15,10 @@
 */
 
 namespace dvc\chat;
+use sys;
 
 abstract class users {
-    static function development( int $id) : dao\dto\user {
+    protected static function development( int $id) : dao\dto\user {
         /**
          * These are users for development
          */
@@ -30,6 +31,18 @@ abstract class users {
         elseif ( 3 == $id) $_->name = 'Davido';
 
         return $_;
+
+    }
+
+    static function currentUser() : int {
+        if ( \class_exists('currentUser')) {
+            return \currentUser::id();  // this is how dvc would do it
+
+        }
+        else {
+            return 0;
+
+        }
 
     }
 
@@ -69,6 +82,7 @@ abstract class users {
 
         }
         else {
+
             $a[] = self::development(0);
             $a[] = self::development(1);
             $a[] = self::development(2);

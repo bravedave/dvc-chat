@@ -37,30 +37,65 @@ class dvc_chat extends _dao {
 
 	}
 
-	public function getUnseen( int $local) : int {
+	public function getUnseen( int $remote, int $local) : int {
+		/**
+		 * local is me, so where I am remote, which ones haven't I seen
+		 * .. so it's reversed ..
+		 */
 		$sql = sprintf(
 			'SELECT
-				count(`id`) c
+				count(`id`) count
 			FROM
 				`%s`
 			WHERE
-				(`local` = %d AND `local_seen` = 0)
-				OR (`remote` = %d AND `remote_seen` = 0)',
+				`local` = %d
+				AND `remote` = %d
+				AND `seen` = 0',
 			$this->_db_name,
-			$local,
+			$remote,
 			$local
 
 		);
 
+		// \sys::logSQL( $sql);
+
 		if ( $res = $this->Result( $sql)) {
 			if ( $dto = $res->dto()) {
-				return $dto->c;
+				return $dto->count;
 
 			}
 
 		}
 
-		return 0;
+		return [];
+
+	}
+
+	public function getUnseenAll( int $local) : array {
+		/**
+		 * local is me, so where I am remote, which ones haven't I seen
+		 * .. so it's reversed ..
+		 */
+		$sql = sprintf(
+			'SELECT
+				c.local,
+				count(c.`id`) count
+			FROM
+				`%s` c
+			WHERE
+				c.`remote` = %d AND c.`seen` = 0
+			GROUP by `local`',
+			$this->_db_name,
+			$local
+
+		);
+
+		if ( $res = $this->Result( $sql)) {
+			return $res->dtoSet();
+
+		}
+
+		return [];
 
 	}
 
@@ -77,32 +112,24 @@ class dvc_chat extends _dao {
 
 	}
 
-	public function SeenMark( int $local, int $version) {
+	public function SeenMark( int $local, int $remote, int $version) {
+		/**
+		 * local is me, so where I am remote,
+		 * for the local I'm viewing
+		 * I've read these
+		 * .. so it's reversed ..
+		 */
 		$this->Q( sprintf(
 			'UPDATE
 				`%s`
 			SET
-				`local_seen` = 1
+				`seen` = 1
 			WHERE
 				`local` = %d
-				AND `id` <= %d
-				',
+				AND `remote` = %d
+				AND `id` <= %d',
 			$this->_db_name,
-			$local,
-			$version
-
-		));
-
-		$this->Q( sprintf(
-			'UPDATE
-				`%s`
-			SET
-				`remote_seen` = 1
-			WHERE
-				`remote` = %d
-				AND `id` <= %d
-				',
-			$this->_db_name,
+			$remote,
 			$local,
 			$version
 

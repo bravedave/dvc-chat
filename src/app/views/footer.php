@@ -9,16 +9,21 @@
  * DO NOT change this file
  * Copy it to <application>/app/views/ and modify it there
  *
-*/	?>
+*/  ?>
+
 <footer class="footer">
 	<div class="container-fluid">
 		<div class="row mb-0">
-			<div class="col-1">
+			<div class="col-1 position-relative">
 				<button class="btn btn-sm btn-light" type="button"
                     id="<?= $_chat = strings::rand() ?>">
 					<?= dvc\icon::get( dvc\icon::chat ) ?>
 
 				</button>
+
+                <div class="accordion position-absolute d-none"
+                    style="bottom: 20px; left: 0;"
+                    id="<?= $_accordion = strings::rand() ?>"></div>
 
 			</div>
 
@@ -35,36 +40,57 @@
 <script>
 ((_) => {
     let chatBox = ( u ) => {
-        let chat = $('<div class="position-absolute" style="bottom: 20px; left: 0;"></div>');
-        chat.load( _.url('/chatbox/'+u+'/0'));
-        $( 'footer').append( chat);
+        if ( $( '[data-id="' + u + '"]', '#<?= $_accordion ?>').length < 1) {
+            fetch( _.url('/chatbox/'+u+'/<?= dvc\chat\users::currentUser() ?>'))
+            .then( data => data.text())
+            .then( html => {
+                let card = $(html)
+
+                card.attr('data-id', u);
+
+                $('.collapse', card).attr('data-parent', '#<?= $_accordion ?>');
+
+                $('#<?= $_accordion ?>').append(card).removeClass('d-none');
+
+            });
+
+        }
 
     };
 
     let f = () => {
-        _.post({
-            url : _.url('/'),
-            data : {
-                action : 'get-unseen',
-                local : 0,
-                remote : 1
+        if ( document.hasFocus()) {
+            _.post({
+                url : _.url('/'),
+                data : {
+                    action : 'get-unseen',
+                    local : 0
 
-            },
+                },
 
-        }).then( function( d) {
-            if ( 'ack' == d.response) {
-                if ( Number(d.unseen) > 0) {
-                    chatBox(1);
+            }).then( function( d) {
+                if ( 'ack' == d.response) {
+                    $.each( d.unseen, ( i, unseen) => {
+                        if ( Number(unseen.count) > 0) {
+                            chatBox(unseen.local);
+
+                        }
+
+                    });
+                    // console.table( d.unseen);
+
 
                 }
-                else {
-                    setTimeout(f, 5000);
 
-                }
+                setTimeout(f, 5000);
 
-            }
+            });
 
-        });
+        }
+        else {
+            setTimeout(f, 5000);
+
+        }
 
     };
 
@@ -74,6 +100,7 @@
         e.stopPropagation();
 
         let _me = $(this);
+        // console.log( _me);
 
         _.post({
             url : _.url('<?= $this->route ?>'),
@@ -84,6 +111,7 @@
 
         }).then( function( d) {
             if ( 'ack' == d.response) {
+
                 _.hideContexts();
 
                 let _context = _.context();
