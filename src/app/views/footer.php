@@ -41,7 +41,7 @@
 ((_) => {
     let chatBox = ( u ) => {
         if ( $( '[data-id="' + u + '"]', '#<?= $_accordion ?>').length < 1) {
-            fetch( _.url('/chatbox/'+u+'/<?= dvc\chat\users::currentUser() ?>'))
+            fetch( _.url('<?= $this->route ?>/chatbox/'+u+'/<?= dvc\chat\users::currentUser() ?>'))
             .then( data => data.text())
             .then( html => {
                 let card = $(html)

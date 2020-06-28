@@ -19,7 +19,7 @@ use strings;
 <script>
 ((_) => {
     let chatBox = ( u) => {
-        fetch( _.url('/chatbox/<?= users::currentUser() ?>/'+String(u)))
+        fetch( _.url('<?= $this->route ?>/chatbox/<?= users::currentUser() ?>/'+String(u)))
         .then( data => data.text())
         .then( html => {
             let card = $(html);
