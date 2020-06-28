@@ -26,7 +26,7 @@ class dvc_chat extends _dao {
 			$local,$remote,
 			$limit);
 
-		// \sys::logSQL( $_sql);
+		\sys::logSQL( $_sql);
 
 		if ( $res = $this->Result( $_sql)) {
 			return $res->dtoSet();
