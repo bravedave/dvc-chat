@@ -12,6 +12,9 @@ namespace dvc\chat;
 use currentUser;
 use strings;
 
+$sendOnEnter = true;
+// $sendOnEnter = false;
+
 ?>
 
 <div class="card m-1" style="width: 18rem;">
@@ -56,6 +59,15 @@ use strings;
             </div>
 
             <div class="card-footer p-1">
+            <?php   if ( $sendOnEnter) { ?>
+                <textarea
+                    class="form-control"
+                    name="message"
+                    placeholder="message ..."
+                    required
+                    rows="2"></textarea>
+
+            <?php   } else {   ?>
                 <div class="input-group">
                     <textarea
                         class="form-control"
@@ -72,6 +84,8 @@ use strings;
                     </div>
 
                 </div>
+
+            <?php   }   ?>
 
             </div>
 
@@ -102,10 +116,17 @@ use strings;
 
         })
         .on('keydown', (e) => {
+        <?php   if ( $sendOnEnter) { ?>
+            if (!e.shiftKey && e.keyCode == 13) {
+                $('#<?= $_form ?>').submit();
+
+            }
+        <?php   } else { ?>
             if (e.ctrlKey && e.keyCode == 13) {
                 $('#<?= $_form ?>').submit();
 
             }
+        <?php   } ?>
 
         });
 
