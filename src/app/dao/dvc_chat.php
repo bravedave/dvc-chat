@@ -33,7 +33,7 @@ class dvc_chat extends _dao {
 
 		// \sys::logSQL( $_sql);
 
-		$this->Q( sprintf( 'CREATE TEMPORRARY TABLE _tmp AS (%s)', $_sql));
+		$this->Q( sprintf( 'CREATE TEMPORARY TABLE _tmp AS (%s)', $_sql));
 
 		$_sql = 'SELECT * FROM _tmp ORDER BY id ASC';
 		if ( $res = $this->Result( $_sql)) {
