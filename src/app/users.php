@@ -30,6 +30,11 @@ abstract class users {
         elseif ( 2 == $id) $_->name = 'Franco';
         elseif ( 3 == $id) $_->name = 'Davido';
 
+        if ( file_exists( $file = self::touchPath( $_))) {
+            $_->access = date( 'c', \fileatime( $file));
+
+        }
+
         return $_;
 
     }
@@ -47,6 +52,24 @@ abstract class users {
     }
 
     static function getAll() : array {
+        $path = config::chat_Path();
+        $a = [];
+        $gi = new \GlobIterator( $path . '/*.json', \FilesystemIterator::KEY_AS_FILENAME);
+        foreach ($gi as $key => $item) {
+            $_ = new dao\dto\user;
+            $_->id = (int)str_replace( '.json', '', $item->getBasename());
+            $_->access = date( 'c', $item->getMTime());
+            $o = \json_decode( \file_get_contents( $item->getRealPath()));
+            $_->name = $o->name;
+            $a[] = $_;
+
+            // $modTime = filemtime( $item->getRealPath());
+
+        }
+        return ( $a);
+
+
+
         $a = [];
         if ( \class_exists('dao\users')) {
             $dao = new \dao\users;
@@ -102,6 +125,11 @@ abstract class users {
                 $_->id = $dto->id;
                 $_->name = $dto->name;
 
+                if ( file_exists( $file = self::touchPath( $dto))) {
+                    $_->access = date( 'Y-m-d h:i:s', \filemtime( $file));
+
+                }
+
                 return $_;
 
             }
@@ -115,6 +143,32 @@ abstract class users {
             return self::development( $id);
 
         }
+
+    }
+
+	static function touch( int $user) {
+		if ( $dto = self::getUser( $user)) {
+
+            $file = self::touchPath( $dto);
+			if ( !\file_exists( $file)) {
+				\file_put_contents( $file, \json_encode((object)['name' => $dto->name]));
+
+			}
+
+            touch( $file);
+            \sys::logger( sprintf('<%s> %s', $dto->name, __METHOD__));
+
+
+		}
+
+    }
+
+    protected static function touchPath( object $dto) : string {
+        return implode( DIRECTORY_SEPARATOR, [
+            config::chat_Path(),
+            $dto->id . '.json'
+
+        ]);
 
     }
 

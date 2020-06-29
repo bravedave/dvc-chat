@@ -15,4 +15,6 @@ class user {
 
     public $name = '';
 
+    public $access = '';
+
 }

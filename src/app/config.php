@@ -78,6 +78,23 @@ class config extends \config {
 
 	}
 
+	static function chat_Path() {
+		$path = implode( DIRECTORY_SEPARATOR, [
+			rtrim( self::dataPath(), '/'),
+			'chat'
+
+		]);
+
+		if ( ! is_dir( $path)) {
+			mkdir( $path);
+			chmod( $path, 0777 );
+
+		}
+
+		return $path;
+
+	}
+
 }
 
 config::dvcchat_init();

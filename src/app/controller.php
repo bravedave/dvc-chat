@@ -39,6 +39,9 @@ class controller extends \Controller {
 		if ( 'get' == $action) {
 			$remote = (int)$this->getPost( 'remote');
 			$local = (int)$this->getPost( 'local');
+
+			if ( $local) users::touch( $local);
+
 			$version = (int)$this->getPost( 'version');
 
 			$dao = new dao\dvc_chat;
@@ -65,6 +68,8 @@ class controller extends \Controller {
         }
 		elseif ( 'get-unseen' == $action) {
 			$local = (int)$this->getPost( 'local');
+
+			if ( $local) users::touch( $local);
 
 			$dao = new dao\dvc_chat;
 			$_version = $dao->version();

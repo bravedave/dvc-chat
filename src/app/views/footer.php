@@ -134,6 +134,18 @@
 
                         });
 
+                        let a = new Date( u.access);
+                        let now = new Date();
+                        let secs = ( now.getTime() - a.getTime()) / 1000;
+                        if ( secs < 60) {
+                            ctrl.prepend( '<i class="fa fa-circle text-success"></i>');
+
+                        }
+                        else if ( secs < 600) {
+                            ctrl.prepend( '<i class="fa fa-circle text-warning"></i>');
+
+                        }
+
                         _context.append( ctrl);
 
                     }
