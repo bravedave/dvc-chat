@@ -156,7 +156,7 @@ abstract class users {
 			}
 
             touch( $file);
-            \sys::logger( sprintf('<%s> %s', $dto->name, __METHOD__));
+            // \sys::logger( sprintf('<%s> %s', $dto->name, __METHOD__));
 
 
 		}
