@@ -16,24 +16,20 @@ class dvc_chat extends _dao {
 
 	public function getRecent( int $local, int $remote, int $limit = 10) : array {
 		$_sql = sprintf(
-			'SELECT
-				*
-			FROM
-				`%s`
-			WHERE
-				`local` IN (%d,%d)
+			'SELECT *
+			FROM `%s`
+			WHERE `local` IN (%d,%d)
 				AND `remote` IN (%d,%d)
-			ORDER
-				BY ID DESC
+			ORDER BY `id` DESC
 			LIMIT %d',
 			$this->_db_name,
 			$local,$remote,
 			$local,$remote,
 			$limit);
 
-		// \sys::logSQL( $_sql);
-
-		$this->Q( sprintf( 'CREATE TEMPORARY TABLE _tmp AS (%s)', $_sql));
+		$sql = sprintf( 'CREATE TEMPORARY TABLE _tmp AS %s', $_sql);
+		// \sys::logSQL( $sql);
+		$this->Q( $sql);
 
 		$_sql = 'SELECT * FROM _tmp ORDER BY id ASC';
 		if ( $res = $this->Result( $_sql)) {

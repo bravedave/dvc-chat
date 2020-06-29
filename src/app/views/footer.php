@@ -41,7 +41,7 @@
 ((_) => {
     let chatBox = ( u ) => {
         if ( $( '[data-id="' + u + '"]', '#<?= $_accordion ?>').length < 1) {
-            fetch( _.url('<?= $this->route ?>/chatbox/'+u+'/<?= dvc\chat\users::currentUser() ?>'))
+            fetch( _.url('chat/chatbox/'+u+'/<?= \dvc\chat\users::currentUser() ?>'))
             .then( data => data.text())
             .then( html => {
                 let card = $(html)
@@ -61,7 +61,7 @@
     let f = () => {
         if ( document.hasFocus()) {
             _.post({
-                url : _.url('/'),
+                url : _.url('chat'),
                 data : {
                     action : 'get-unseen',
                     local : 0
@@ -82,13 +82,13 @@
 
                 }
 
-                setTimeout(f, 5000);
+                setTimeout(f, 15000);
 
             });
 
         }
         else {
-            setTimeout(f, 5000);
+            setTimeout(f, 15000);
 
         }
 
@@ -103,7 +103,7 @@
         // console.log( _me);
 
         _.post({
-            url : _.url('<?= $this->route ?>'),
+            url : _.url('chat'),
             data : {
                 action : 'get-users'
 

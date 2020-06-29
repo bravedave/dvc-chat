@@ -12,8 +12,8 @@ namespace dvc\chat;
 
 class launcher extends \application {
 	function __construct( $rootPath) {
-		$this->defaultController = 'dvc\chat\controller';
 		parent::__construct( $rootPath);
+		config::route_register( 'chat', 'dvc\chat\controller');
 
 	}
 
