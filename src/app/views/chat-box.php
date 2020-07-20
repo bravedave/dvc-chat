@@ -53,7 +53,7 @@ $sendOnEnter = true;
             <input type="hidden" name="local" value="<?= $this->data->local->id ?>" />
             <input type="hidden" name="version" value="0" />
 
-            <div class="card-body p-1 overflow-auto" style="max-height: 18em;">
+            <div class="card-body p-1 overflow-auto h-100">
                 <div class="container-fluid" messages></div>
 
             </div>
@@ -250,10 +250,10 @@ $sendOnEnter = true;
 
                         if ( !found) {
                             let cls = 'col-9 py-1 pl-0 d-flex';
-                            let msgCls = 'py-1 px-2 bg-light border rounded-top rounded-right mr-auto';
+                            let msgCls = 'py-1 px-2 bg-light border rounded-top rounded-right mr-auto overflow-hidden';
                             if ( _data.local == m.local) {
                                 cls = 'offset-3 col-9 py-1 pr-0 d-flex';   // it's me
-                                msgCls = 'py-1 px-2 bg-primary border-light text-white rounded-top rounded-left ml-auto';   // it's me
+                                msgCls = 'py-1 px-2 bg-primary border-light text-white rounded-top rounded-left ml-auto overflow-hidden';   // it's me
 
                             }
 
