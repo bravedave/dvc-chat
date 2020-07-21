@@ -53,7 +53,7 @@ $sendOnEnter = true;
             <input type="hidden" name="local" value="<?= $this->data->local->id ?>" />
             <input type="hidden" name="version" value="0" />
 
-            <div class="card-body p-1 overflow-auto h-100">
+            <div class="card-body p-1 overflow-auto mh-100">
                 <div class="container-fluid" messages></div>
 
             </div>
