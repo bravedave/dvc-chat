@@ -15,12 +15,8 @@ class controller extends \Controller {
 	protected $label = config::label;
 
 	protected function before() {
-
 		config::dvcchat_checkdatabase();
-		// config::route_register( 'docmgr', 'dvc\docmgr\controller');
 		parent::before();
-
-		// sys::logger( sprintf('<%s> %s', 'hear me !', __METHOD__));
 
 	}
 

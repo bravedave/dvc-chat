@@ -17,8 +17,13 @@ class launcher extends \application {
 
 	}
 
+	static function startDir() {
+		return dirname( __DIR__);
+
+	}
+
 	static function run( $dir = null) {
-		new self( $dir ? $dir : dirname( __DIR__));
+		new self( self::startDir());
 
 	}
 
