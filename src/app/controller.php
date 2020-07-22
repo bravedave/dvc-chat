@@ -63,7 +63,7 @@ class controller extends \Controller {
 
         }
 		elseif ( 'get-unseen' == $action) {
-			$local = (int)$this->getPost( 'local');
+			$local = (int)$this->getPost( 'local') ? users::currentUser();
 
 			if ( $local) users::touch( $local);
 
@@ -71,7 +71,7 @@ class controller extends \Controller {
 			$_version = $dao->version();
 
 			Json::ack( $action)
-				->add('unseen', $dao->getUnseenAll( users::currentUser()));
+				->add('unseen', $dao->getUnseenAll( $local));
 
 		}
 		elseif ( 'get-users' == $action) {
