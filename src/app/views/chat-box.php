@@ -34,6 +34,7 @@ $sendOnEnter = true;
 
             }   ?>
             <span class="badge badge-light d-none" id="<?= $_unseen = strings::rand() ?>">&nbsp;</span>
+            <span class="spinner-grow spinner-grow-sm text-warning d-none" id="<?= $_unseen ?>flash">&nbsp;</span>
 
         </button>
 
@@ -296,10 +297,12 @@ $sendOnEnter = true;
                     // console.log( d.unseen);
                     if ( Number( d.unseen) > 0 ) {
                         $('#<?= $_unseen ?>').removeClass( 'd-none').html(d.unseen);
+                        $('#<?= $_unseen ?>flash').removeClass( 'd-none');
 
                     }
                     else {
                         $('#<?= $_unseen ?>').addClass( 'd-none');
+                        $('#<?= $_unseen ?>flash').addClass( 'd-none');
 
                     }
                     // console.log('update-chat');
