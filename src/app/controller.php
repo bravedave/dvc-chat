@@ -71,7 +71,7 @@ class controller extends \Controller {
 			$_version = $dao->version();
 
 			Json::ack( $action)
-				->add('unseen', $dao->getUnseenAll( $local));
+				->add('unseen', $dao->getUnseenAll( users::currentUser()));
 
 		}
 		elseif ( 'get-users' == $action) {
