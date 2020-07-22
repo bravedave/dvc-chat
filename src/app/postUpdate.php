@@ -14,6 +14,7 @@ use dvc\service;
 
 class postUpdate extends service {
     protected function _upgrade() {
+		config::route_register( 'home', 'dvc\chat\controller');
 		config::route_register( 'chat', 'dvc\chat\controller');
         echo( sprintf('%s : %s%s', 'updated', __METHOD__, PHP_EOL));
 
