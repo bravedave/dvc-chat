@@ -63,7 +63,7 @@ class controller extends \Controller {
 
         }
 		elseif ( 'get-unseen' == $action) {
-			$local = (int)$this->getPost( 'local') || users::currentUser();
+			$local = (int)$this->getPost( 'local');
 
 			if ( $local) users::touch( $local);
 
