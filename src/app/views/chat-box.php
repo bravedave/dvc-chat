@@ -34,7 +34,7 @@ $sendOnEnter = true;
 
             }   ?>
             <span class="badge badge-light d-none" id="<?= $_unseen = strings::rand() ?>">&nbsp;</span>
-            <span class="spinner-grow spinner-grow-sm text-warning d-none" id="<?= $_unseen ?>flash">&nbsp;</span>
+            <span class="spinner-grow spinner-grow-sm text-danger d-none" id="<?= $_unseen ?>flash">&nbsp;</span>
 
         </button>
 
