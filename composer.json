@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "bravedave/dvc": "dev-master"
+        "bravedave/dvc": "*"
     },
     "autoload": {
         "psr-4": {
