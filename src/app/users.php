@@ -52,7 +52,7 @@ abstract class users {
     }
 
     static function getAll() : array {
-        $path = config::chat_Path();
+        $path = config::dvcchat_Path();
         $a = [];
         $gi = new \GlobIterator( $path . '/*.json', \FilesystemIterator::KEY_AS_FILENAME);
         foreach ($gi as $key => $item) {
@@ -165,7 +165,7 @@ abstract class users {
 
     protected static function touchPath( object $dto) : string {
         return implode( DIRECTORY_SEPARATOR, [
-            config::chat_Path(),
+            config::dvcchat_Path(),
             $dto->id . '.json'
 
         ]);

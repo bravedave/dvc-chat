@@ -6,24 +6,28 @@
  *
  * MIT License
  *
- * DO NOT change this file
- * Copy it to <application>/app/views/ and modify it there
- *
-*/  ?>
+*/
+
+namespace dvc\chat;
+
+use dvc\icon;
+use strings;
+
+?>
 
 <footer class="footer">
 	<div class="container-fluid">
 		<div class="row mb-0">
 			<div class="col-1 position-relative">
 				<button class="btn btn-sm btn-light" type="button"
-                    id="<?= $_chat = strings::rand() ?>">
-					<?= dvc\icon::get( dvc\icon::chat ) ?>
+          id="<?= $_chat = strings::rand() ?>">
+					<?= icon::get( icon::chat ) ?>
 
 				</button>
 
-                <div class="accordion position-absolute d-none"
-                    style="bottom: 20px; left: 0;"
-                    id="<?= $_accordion = strings::rand() ?>"></div>
+        <div class="accordion position-absolute d-none"
+          style="bottom: 20px; left: 0;"
+          id="<?= $_accordion = strings::rand() ?>"></div>
 
 			</div>
 
@@ -38,127 +42,190 @@
 
 </footer>
 <script>
-((_) => {
+$(document).ready( () => {
+  ((_) => {
     let chatBox = ( u ) => {
-        if ( $( '[data-id="' + u + '"]', '#<?= $_accordion ?>').length < 1) {
-            fetch( _.url('chat/chatbox/'+u+'/<?= \dvc\chat\users::currentUser() ?>'))
-            .then( data => data.text())
-            .then( html => {
-                let card = $(html)
+      if ( $( '[data-id="' + u + '"]', '#<?= $_accordion ?>').length < 1) {
+        fetch( _.url('chat/chatbox/'+u+'/<?= users::currentUser() ?>'))
+        .then( data => data.text())
+        .then( html => {
+          let card = $(html)
 
-                card.attr('data-id', u);
+          card.attr('data-id', u);
 
-                $('.collapse', card).attr('data-parent', '#<?= $_accordion ?>');
+          $('.collapse', card).attr('data-parent', '#<?= $_accordion ?>');
 
-                $('#<?= $_accordion ?>').append(card).removeClass('d-none');
+          $('#<?= $_accordion ?>').append(card).removeClass('d-none');
 
-            });
+        });
 
-        }
+      }
 
     };
 
     let f = () => {
-        if ( document.hasFocus()) {
-            _.post({
-                url : _.url('chat'),
-                data : {
-                    action : 'get-unseen',
-                    local : 0
+      if ( document.hasFocus()) {
+        _.post({
+          url : _.url('chat'),
+          data : {
+            action : 'get-unseen',
+            local : 0
 
-                },
+          },
 
-            }).then( function( d) {
-                if ( 'ack' == d.response) {
-                    $.each( d.unseen, ( i, unseen) => {
-                        if ( Number(unseen.count) > 0) {
-                            chatBox(unseen.local);
+        }).then( function( d) {
+          if ( 'ack' == d.response) {
+            $.each( d.unseen, ( i, unseen) => {
+              if ( Number(unseen.count) > 0) {
+                chatBox(unseen.local);
 
-                        }
-
-                    });
-                    // console.table( d.unseen);
-
-
-                }
-
-                setTimeout(f, 15000);
+              }
 
             });
+            // console.table( d.unseen);
 
-        }
-        else {
-            setTimeout(f, 15000);
+          }
+          setTimeout(f, 15000);
 
-        }
+        });
+
+      }
+      else {
+          setTimeout(f, 15000);
+
+      }
 
     };
 
     setTimeout(f, 1000);
 
-    $('#<?= $_chat ?>').on( 'click', function( e) {
+    $('#<?= $_chat ?>')
+    .on( 'click', function( e) {
         e.stopPropagation();
 
         let _me = $(this);
         // console.log( _me);
 
         _.post({
-            url : _.url('chat'),
-            data : {
-                action : 'get-users'
-
-            },
+          url : _.url('chat'),
+          data : { action : 'get-users'},
 
         }).then( function( d) {
-            if ( 'ack' == d.response) {
+          // console.log( _me);
+          if ( 'ack' == d.response) {
 
-                _.hideContexts();
+            _.hideContexts();
 
-                let _context = _.context();
+            let _context = _.context();
 
-                $.each( d.users, (i, u) => {
-                    if ( <?= currentUser::id() ?> != u.id) {
-                        let ctrl = $('<a href="#"></a>');
+            $.each( d.users, (i, u) => {
+              if ( <?= users::currentUser() ?> != u.id) {
+                let ctrl = $('<a href="#"></a>');
 
-                        ctrl
-                        .html( u.name)
-                        .data('id', u.id)
-                        .on( 'click', function( e) {
-                            e.stopPropagation();e.preventDefault();
+                ctrl
+                .html( u.name)
+                .data('id', u.id)
+                .on( 'click', function( e) {
+                    e.stopPropagation();e.preventDefault();
 
-                            let _me = $(this);
-                            let _data = _me.data();
+                    let _me = $(this);
+                    let _data = _me.data();
 
-                            chatBox( _data.id);
-                            _context.close();
-
-                        });
-
-                        let a = new Date( u.access);
-                        let now = new Date();
-                        let secs = ( now.getTime() - a.getTime()) / 1000;
-                        if ( secs < 60) {
-                            ctrl.prepend( '<i class="fa fa-circle text-success"></i>');
-
-                        }
-                        else if ( secs < 600) {
-                            ctrl.prepend( '<i class="fa fa-circle text-warning"></i>');
-
-                        }
-
-                        _context.append( ctrl);
-
-                    }
+                    chatBox( _data.id);
+                    _context.close();
 
                 });
 
-                _context.open( e);
+                let a = new Date( u.access);
+                let now = new Date();
+                let secs = ( now.getTime() - a.getTime()) / 1000;
+                if ( secs < 60) {
+                    ctrl.prepend( '<i class="fa fa-circle text-success"></i>');
+
+                }
+                else if ( secs < 600) {
+                    ctrl.prepend( '<i class="fa fa-circle text-warning"></i>');
+
+                }
+
+                _context.append( ctrl);
 
             }
 
-        });
+          });
+
+          _context.open( e);
+
+        }
+
+      });
+
+    });
+<?php if ( push::enabled()) { ?>
+    $('#<?= $_chat ?>')
+    .on( 'contextmenu', function( e) {
+      if ( e.shiftKey)
+        return;
+
+      e.stopPropagation();e.preventDefault();
+
+      _brayworth_.hideContexts();
+
+      let _me = $(this);
+      let _context = _brayworth_.context();
+
+      _context.append( $('<a href="#">Show Notifications</a>').on( 'click', function( e) {
+        e.stopPropagation();e.preventDefault();
+
+        _context.close();
+        _me.trigger( 'subscribe');
+
+      }));
+
+      _context.append( $('<a href="#">Send Message</a>').on( 'click', function( e) {
+        e.stopPropagation();e.preventDefault();
+
+        _context.close();
+        _me.trigger( 'send-test-message');
+
+      }));
+
+      _context.open( e);
+
+    })
+    .on( 'send-test-message', e => {
+      _.post({
+        url : _.url('chat'),
+        data : {
+          action : 'send-test-message'
+
+        },
+
+      }).then( d => {
+        if ( 'ack' == d.response) {
+        }
+        else {
+          _.growl( d);
+
+        }
+
+      });
+
+    })
+    .on( 'subscribe', e => {
+      // _.push.unsubscribe() :
+      _.push.subscribe();
 
     });
 
-})(_brayworth_);
+    _.push.url = _.url( 'chat');
+    _.push.applicationServerKey = '<?= trim( config::dvcchat_keys()->pubKey) ?>';
+    _.push.serviceWorker = _.url( 'chat/serviceWorker');
+    _.push.load();
+
+<?php } // if ( push::enabled()) ?>
+
+  })(_brayworth_);
+
+});
 </script>

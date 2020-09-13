@@ -22,8 +22,11 @@
     },
     "scripts": {
         "post-update-cmd": [
-            "dvc\\chat\\postUpdate::upgrade"
+            "dvc\\chat\\updater::upgrade"
         ]
+    },
+    "suggest":{
+        "minishlink/web-push" : "Push Notification library"
     }
 
 }

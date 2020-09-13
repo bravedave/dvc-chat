@@ -9,6 +9,7 @@
 */
 namespace dvc\chat;
 use Json;
+use strings;
 
 class controller extends \Controller {
 
@@ -29,7 +30,7 @@ class controller extends \Controller {
 
 	}
 
-	protected function posthandler() {
+	protected function postHandler() {
 		$action = $this->getPost('action');
 
 		if ( 'get' == $action) {
@@ -61,7 +62,7 @@ class controller extends \Controller {
 
 			}
 
-        }
+		}
 		elseif ( 'get-unseen' == $action) {
 			$local = (int)$this->getPost( 'local');
 
@@ -95,9 +96,9 @@ class controller extends \Controller {
 			$id = $dao->Insert($a);
 			$dao->SeenMark( $local, $remote, $id);
 
-            Json::ack( $action);
+			Json::ack( $action);
 
-        }
+		}
 		elseif ( 'seen-mark' == $action) {
 			$local = (int)$this->getPost( 'local');
 			$remote = (int)$this->getPost( 'remote');
@@ -106,27 +107,66 @@ class controller extends \Controller {
 			$dao = new dao\dvc_chat;
 			$dao->SeenMark( $local, $remote, $version);
 
-            Json::ack( $action);
+			Json::ack( $action);
 
-        }
-        else { Json::nak( $action); }
+		}
+		elseif ( 'send-test-message' == $action) {
+			push::test();
 
-    }
+		}
+		elseif ( 'subscription-save' == $action) {
+			$path = implode( DIRECTORY_SEPARATOR, [
+					config::dvcchat_KeyPath(),
+					'subscription.json'
+
+			]);
+
+			file_put_contents( $path, $this->getPost( 'json'));
+			Json::ack( $action);
+
+		}
+		else {
+			parent::postHandler();
+
+		}
+
+	}
+
+	protected function page( $params) {
+		if ( push::enabled()) {
+			$defaults = [
+				'latescripts' => [
+					sprintf( '<script src="%s"></script>', strings::url($this->route . '/chatjs'))
+
+				],
+
+			];
+
+			$options = array_merge( $defaults, $params);
+			return parent::page( $options);
+
+		}
+		else {
+			return parent::page( $params);
+
+		}
+
+	}
 
 	protected function _index() {
 		\dvc\pages\bootstrap::$primaryClass = 'col-sm-6 col-md-7 col-lg-8 pt-3 pb-4';
 		\dvc\pages\bootstrap::$secondaryClass = 'col-sm-6 col-md-5 col-lg-4 pt-3 pb-4 d-print-none';
 
-        $this->render([
-            'title' => $this->title = $this->label,
-            'primary' => 'blank',
-            'secondary' => ['remotes']
+		$this->render([
+				'title' => $this->title = $this->label,
+				'primary' => 'blank',
+				'secondary' => ['remotes']
 
-        ]);
+		]);
 
-    }
+	}
 
-    function chatbox( $remote = 0, $local = 0) {
+	public function chatbox( $remote = 0, $local = 0) {
 		if ( $remote || $local) {
 			$this->data = (object)[
 				'local' => users::getUser( (int)$local),
@@ -142,6 +182,16 @@ class controller extends \Controller {
 
 		}
 
-    }
+	}
+
+	public function chatjs() {
+		\sys::serve( __DIR__ . '/js/push.js');
+
+	}
+
+	public function serviceWorker() {
+		\sys::serve( __DIR__ . '/js/service-worker.js');
+
+	}
 
 }

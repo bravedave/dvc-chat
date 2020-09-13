@@ -13,7 +13,7 @@ namespace dvc\chat;
 class config extends \config {
 	const dvcchat_db_version = 0.03;
 
-    const label = 'Chat';
+	const label = 'Chat';
 
 	static protected $_DVCCHAT_VERSION = 0;
 
@@ -59,7 +59,61 @@ class config extends \config {
 
 	}
 
-    static function dvcchat_init() {
+	static function dvcchat_keys() : object {
+		$a = [
+			'pubKey' => '',
+			'privKey' => ''
+
+		];
+
+		$pubPath = implode(
+			DIRECTORY_SEPARATOR, [
+				self::dvcchat_KeyPath(),
+				'public_key.txt'
+
+			]
+
+		);
+
+		$privPath = implode(
+			DIRECTORY_SEPARATOR, [
+				self::dvcchat_KeyPath(),
+				'private_key.txt'
+
+			]
+
+		);
+
+		if ( file_exists( $privPath) && file_exists( $pubPath)) {
+			$a['privKey'] = file_get_contents( $privPath);
+			$a['pubKey'] = file_get_contents( $pubPath);
+
+		}
+		else {
+			/**
+			 * they need to be created
+			 */
+
+			if ( \class_exists( 'Minishlink\WebPush\VAPID')) {
+				$keys = (object)\Minishlink\WebPush\VAPID::createVapidKeys();
+				$a['privKey'] = $keys->privateKey;
+				$a['pubKey'] = $keys->publicKey;
+
+				if ( file_exists( $privPath)) @unlink( $privPath);
+				if ( file_exists( $pubPath)) @unlink( $pubPath);
+
+				file_put_contents( $privPath, $keys->privateKey);
+				file_put_contents( $pubPath, $keys->publicKey);
+
+			}
+
+		}
+
+		return (object)$a;
+
+	}
+
+	static function dvcchat_init() {
 		if ( file_exists( $config = self::dvcchat_config())) {
 			$j = json_decode( file_get_contents( $config));
 
@@ -78,7 +132,24 @@ class config extends \config {
 
 	}
 
-	static function chat_Path() {
+	static function dvcchat_KeyPath() {
+		$path = implode( DIRECTORY_SEPARATOR, [
+			self::dvcchat_Path(),
+			'keys'
+
+		]);
+
+		if ( ! is_dir( $path)) {
+			mkdir( $path);
+			chmod( $path, 0777 );
+
+		}
+
+		return $path;
+
+	}
+
+	static function dvcchat_Path() {
 		$path = implode( DIRECTORY_SEPARATOR, [
 			rtrim( self::dataPath(), '/'),
 			'chat'
