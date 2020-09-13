@@ -1,7 +1,7 @@
 @Echo Off
 SETLOCAL
 SET WD=%CD%
-
+SET OPENSSL_CONF=C:/php/extras/ssl/openssl.cnf
 CD www
 
 rem +--------------------------------------------
