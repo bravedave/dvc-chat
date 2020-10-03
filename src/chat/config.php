@@ -12,7 +12,6 @@ namespace dvc\chat;
 
 class config extends \config {
 	const dvcchat_db_version = 0.03;
-
 	const label = 'Chat';
 
 	static protected $_DVCCHAT_VERSION = 0;
@@ -46,16 +45,14 @@ class config extends \config {
 
 		}
 
-		// sys::logger( 'bro!');
-
 	}
 
 	static function dvcchat_config() {
 		return implode( DIRECTORY_SEPARATOR, [
-            rtrim( self::dataPath(), '/ '),
-            'dvcchat.json'
+      rtrim( self::dataPath(), '/ '),
+      'dvcchat.json'
 
-        ]);
+    ]);
 
 	}
 

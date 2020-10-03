@@ -10,6 +10,7 @@
 
 namespace dvc\chat;
 
+use application;
 use dvc\service;
 
 class updater extends service {
@@ -21,7 +22,7 @@ class updater extends service {
   }
 
   static function upgrade() {
-    $app = new self( launcher::startDir());
+    $app = new self( application::startDir());
     $app->_upgrade();
 
   }

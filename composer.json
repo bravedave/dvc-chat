@@ -1,32 +1,31 @@
 {
-    "name": "bravedave/dvc-chat",
-    "description": "Simple Chat iDEA",
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Dave Bray",
-            "email": "david@brayworth.com.au"
-        }
-    ],
-    "require": {
-        "bravedave/dvc": "*"
-    },
-    "autoload": {
-        "psr-4": {
-            "dvc\\chat\\": "src/app/"
-
-        }
-
-    },
-    "scripts": {
-        "post-update-cmd": [
-            "dvc\\chat\\updater::upgrade"
-        ]
-    },
-    "suggest":{
-        "minishlink/web-push" : "Push Notification library"
+  "name": "bravedave/dvc-chat",
+  "description": "Simple Chat iDEA",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Dave Bray",
+      "email": "david@brayworth.com.au"
     }
+  ],
+  "require": {
+    "bravedave/dvc": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "dvc\\chat\\": "src/chat/",
+      "": "src/app/"
+    }
+  },
+  "scripts": {
+    "post-update-cmd": [
+      "dvc\\chat\\updater::upgrade"
+    ]
+  },
+  "suggest":{
+    "minishlink/web-push" : "Push Notification library"
+  }
 
 }

@@ -15,7 +15,7 @@ use strings;
 
 ?>
 
-<footer class="footer">
+<footer class="footer-fixed">
 	<div class="container-fluid">
 		<div class="row mb-0">
 			<div class="col-1 position-relative">
@@ -43,7 +43,7 @@ use strings;
 </footer>
 <script>
 $(document).ready( () => {
-  ((_) => {
+  (_ => {
     let chatBox = ( u ) => {
       if ( $( '[data-id="' + u + '"]', '#<?= $_accordion ?>').length < 1) {
         fetch( _.url('chat/chatbox/'+u+'/<?= users::currentUser() ?>'))
