@@ -23,9 +23,6 @@
     "post-update-cmd": [
       "dvc\\chat\\updater::upgrade"
     ]
-  },
-  "suggest":{
-    "minishlink/web-push" : "Push Notification library"
   }
 
 }

@@ -102,55 +102,8 @@ class controller extends \Controller {
 			Json::ack( $action);
 
 		}
-		elseif ( 'send-test-message' == $action) {
-			push::test();
-
-		}
-		elseif ( 'subscription-delete' == $action) {
-			$path = implode( DIRECTORY_SEPARATOR, [
-					config::notification_KeyPath(),
-					'subscription.json'
-
-			]);
-
-			if ( \file_exists( $path)) unlink( $path);
-			Json::ack( $action);
-
-		}
-		elseif ( 'subscription-save' == $action) {
-			$path = implode( DIRECTORY_SEPARATOR, [
-					config::notification_KeyPath(),
-					'subscription.json'
-
-			]);
-
-			file_put_contents( $path, $this->getPost( 'json'));
-			Json::ack( $action);
-
-		}
 		else {
 			parent::postHandler();
-
-		}
-
-	}
-
-	protected function page( $params) {
-    if ( class_exists( 'dvc\push') && push::enabled()) {
-			$defaults = [
-				'latescripts' => [
-					sprintf( '<script src="%s"></script>', strings::url($this->route . '/chatjs'))
-
-				],
-
-			];
-
-			$options = array_merge( $defaults, $params);
-			return parent::page( $options);
-
-		}
-		else {
-			return parent::page( $params);
 
 		}
 
@@ -184,16 +137,6 @@ class controller extends \Controller {
 			$this->load( 'chat-box-remote-invalid');
 
 		}
-
-	}
-
-	public function chatjs() {
-		\sys::serve( __DIR__ . '/js/push.js');
-
-	}
-
-	public function serviceWorker() {
-		\sys::serve( __DIR__ . '/js/service-worker.js');
 
 	}
 
