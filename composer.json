@@ -16,7 +16,7 @@
   "autoload": {
     "psr-4": {
       "dvc\\chat\\": "src/chat/",
-      "": "src/app/"
+      "": "src/application/app/"
     }
   },
   "scripts": {

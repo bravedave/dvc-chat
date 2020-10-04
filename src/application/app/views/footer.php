@@ -161,69 +161,103 @@ $(document).ready( () => {
       });
 
     });
-<?php if ( push::enabled()) { ?>
-    $('#<?= $_chat ?>')
-    .on( 'contextmenu', function( e) {
-      if ( e.shiftKey)
-        return;
 
-      e.stopPropagation();e.preventDefault();
+    <?php if ( class_exists( 'dvc\push') && push::enabled()) { ?>
 
-      _brayworth_.hideContexts();
+      /**
+      * Check the current Notification permission.
+      * If its denied, skip this until the user
+      * changes the permission manually
+      */
 
-      let _me = $(this);
-      let _context = _brayworth_.context();
+      if (Notification.permission === 'denied') {
+        console.warn('Notifications are denied by the user');
 
-      _context.append( $('<a href="#">Show Notifications</a>').on( 'click', function( e) {
-        e.stopPropagation();e.preventDefault();
+      }
+      else {
 
-        _context.close();
-        _me.trigger( 'subscribe');
+        _.push.url = _.url( 'chat');
+        _.push.applicationServerKey = '<?= trim( config::notification_keys()->pubKey) ?>';
+        _.push.serviceWorker = _.url( 'serviceWorker');
+        _.push.load();
 
-      }));
+        $('#<?= $_chat ?>')
+        .on( 'contextmenu', function( e) {
+          if ( e.shiftKey)
+            return;
 
-      _context.append( $('<a href="#">Send Message</a>').on( 'click', function( e) {
-        e.stopPropagation();e.preventDefault();
+          e.stopPropagation();e.preventDefault();
 
-        _context.close();
-        _me.trigger( 'send-test-message');
+          _brayworth_.hideContexts();
 
-      }));
+          let _me = $(this);
+          let _context = _brayworth_.context();
 
-      _context.open( e);
+          if ( _.push.active) {
+            _context.append( $('<a href="#">Unsubscribe from Notifications</a>').on( 'click', e => {
+              e.stopPropagation();e.preventDefault();
 
-    })
-    .on( 'send-test-message', e => {
-      _.post({
-        url : _.url('chat'),
-        data : {
-          action : 'send-test-message'
+              _context.close();
+              _me.trigger( 'unsubscribe');
 
-        },
+            }));
 
-      }).then( d => {
-        if ( 'ack' == d.response) {
-        }
-        else {
-          _.growl( d);
+            _context.append( $('<a href="#">Send test Message</a>').on( 'click', function( e) {
+              e.stopPropagation();e.preventDefault();
 
-        }
+              _context.close();
+              _me.trigger( 'send-test-message');
 
-      });
+            }));
 
-    })
-    .on( 'subscribe', e => {
-      // _.push.unsubscribe() :
-      _.push.subscribe();
+          }
+          else {
+            _context.append( $('<a href="#">Subscribe for Notifications</a>').on( 'click', e => {
+              e.stopPropagation();e.preventDefault();
 
-    });
+              _context.close();
+              _me.trigger( 'subscribe');
 
-    _.push.url = _.url( 'chat');
-    _.push.applicationServerKey = '<?= trim( config::dvcchat_keys()->pubKey) ?>';
-    _.push.serviceWorker = _.url( 'chat/serviceWorker');
-    _.push.load();
+            }));
 
-<?php } // if ( push::enabled()) ?>
+          }
+
+          _context.open( e);
+
+        })
+        .on( 'send-test-message', e => {
+          _.post({
+            url : _.url('chat'),
+            data : {
+              action : 'send-test-message'
+
+            },
+
+          }).then( d => {
+            if ( 'ack' == d.response) {
+            }
+            else {
+              _.growl( d);
+
+            }
+
+          });
+
+        })
+        .on( 'subscribe', e => {
+          // _.push.unsubscribe() :
+          _.push.subscribe();
+
+        })
+        .on( 'unsubscribe', e => {
+          // _.push.unsubscribe() :
+          _.push.unsubscribe();
+
+        });
+
+      }
+
+    <?php } // if ( push::enabled()) ?>
 
   })(_brayworth_);
 

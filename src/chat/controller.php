@@ -106,9 +106,20 @@ class controller extends \Controller {
 			push::test();
 
 		}
+		elseif ( 'subscription-delete' == $action) {
+			$path = implode( DIRECTORY_SEPARATOR, [
+					config::notification_KeyPath(),
+					'subscription.json'
+
+			]);
+
+			if ( \file_exists( $path)) unlink( $path);
+			Json::ack( $action);
+
+		}
 		elseif ( 'subscription-save' == $action) {
 			$path = implode( DIRECTORY_SEPARATOR, [
-					config::dvcchat_KeyPath(),
+					config::notification_KeyPath(),
 					'subscription.json'
 
 			]);
@@ -125,7 +136,7 @@ class controller extends \Controller {
 	}
 
 	protected function page( $params) {
-		if ( push::enabled()) {
+    if ( class_exists( 'dvc\push') && push::enabled()) {
 			$defaults = [
 				'latescripts' => [
 					sprintf( '<script src="%s"></script>', strings::url($this->route . '/chatjs'))
