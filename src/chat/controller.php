@@ -8,6 +8,8 @@
  *
 */
 namespace dvc\chat;
+
+use dvc\push;;
 use Json;
 use strings;
 
@@ -82,11 +84,14 @@ class controller extends \Controller {
 				'local' => $local,
 				'remote' => $remote
 
-			];
+      ];
+
 
 			$dao = new dao\dvc_chat;
 			$id = $dao->Insert($a);
-			$dao->SeenMark( $local, $remote, $id);
+      $dao->SeenMark( $local, $remote, $id);
+
+      if ( push::enabled()) push::send( $a['message'], $remote);
 
 			Json::ack( $action);
 
