@@ -207,7 +207,7 @@ $sendOnEnter = true;
 
         $('div[role="status"] > span', _form).text( '');
         $('div[role="status"]', _form).addClass('d-none').removeClass('d-flex');
-        $('textarea[name="message"]', _form).removeClass('d-none');
+        $('textarea[name="message"]', _form).removeClass('d-none').focus();
 
       })
       .on( 'sending-on', function( e) {
