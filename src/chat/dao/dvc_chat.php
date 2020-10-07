@@ -14,7 +14,25 @@ use dao\_dao;
 class dvc_chat extends _dao {
 	protected $_db_name = 'dvc_chat';
 
-	public function getRecent( int $local, int $remote, int $limit = 10) : array {
+	public function getFor( int $remote, int $local) {
+		$sql = sprintf(
+      'SELECT * FROM `%s`
+      WHERE `local` IN (%d,%d)
+        AND `remote` IN (%d,%d)
+      ORDER BY `created` DESC',
+			$this->_db_name,
+      $local,$remote,
+			$remote,$local
+
+		);
+
+		// \sys::logSQL( $sql);
+
+		return $this->Result( $sql);
+
+  }
+
+  public function getRecent( int $local, int $remote, int $limit = 10) : array {
 		$_sql = sprintf(
 			'SELECT *
 			FROM `%s`
