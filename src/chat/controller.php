@@ -143,6 +143,30 @@ class controller extends \Controller {
 
 		}
 
-	}
+  }
+
+  public function report( $remote = 0) {
+    if ( $remote = (int)$remote) {
+      $dao = new dao\dvc_chat;
+      $this->data = (object)[
+        'remote' => users::getUser( $remote),
+        'dtoSet' => $dao->dtoSet( $dao->getFor( users::currentUser(), $remote))
+
+      ];
+
+      $this->modal([
+        'title' => $this->data->remote->name,
+        'class' => 'modal-dialog-scrollable modal-lg',
+        'load' => 'chat-report'
+
+      ]);
+
+    }
+    else {
+      $this->load('not-found');
+
+    }
+
+  }
 
 }

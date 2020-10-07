@@ -18,26 +18,26 @@ namespace dvc\chat;
 use sys;
 
 abstract class users {
-    protected static function development( int $id) : dao\dto\user {
-        /**
-         * These are users for development
-         */
-        $_ = new dao\dto\user;
-        $_->id = $id;
+  protected static function development( int $id) : dao\dto\user {
+      /**
+       * These are users for development
+       */
+      $_ = new dao\dto\user;
+      $_->id = $id;
 
-        $_->name = 'Local';
-        if ( 1 == $id) $_->name = 'Billy';
-        elseif ( 2 == $id) $_->name = 'Franco';
-        elseif ( 3 == $id) $_->name = 'Davido';
+      $_->name = 'Local';
+      if ( 1 == $id) $_->name = 'Billy';
+      elseif ( 2 == $id) $_->name = 'Franco';
+      elseif ( 3 == $id) $_->name = 'Davido';
 
-        if ( file_exists( $file = self::touchPath( $_))) {
-            $_->access = date( 'c', \fileatime( $file));
+      if ( file_exists( $file = self::touchPath( $_))) {
+          $_->access = date( 'c', \fileatime( $file));
 
-        }
+      }
 
-        return $_;
+      return $_;
 
-    }
+  }
 
     static function currentUser() : int {
         if ( \class_exists('currentUser')) {
@@ -148,28 +148,26 @@ abstract class users {
 
 	static function touch( int $user) {
 		if ( $dto = self::getUser( $user)) {
-
-            $file = self::touchPath( $dto);
+      $file = self::touchPath( $dto);
 			if ( !\file_exists( $file)) {
 				\file_put_contents( $file, \json_encode((object)['name' => $dto->name]));
 
 			}
 
-            touch( $file);
-            // \sys::logger( sprintf('<%s> %s', $dto->name, __METHOD__));
-
+      touch( $file);
+      // \sys::logger( sprintf('<%s> %s', $dto->name, __METHOD__));
 
 		}
 
-    }
+  }
 
-    protected static function touchPath( object $dto) : string {
-        return implode( DIRECTORY_SEPARATOR, [
-            config::dvcchat_Path(),
-            $dto->id . '.json'
+  protected static function touchPath( object $dto) : string {
+      return implode( DIRECTORY_SEPARATOR, [
+          config::dvcchat_Path(),
+          $dto->id . '.json'
 
-        ]);
+      ]);
 
-    }
+  }
 
 }
