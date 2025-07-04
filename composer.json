@@ -15,7 +15,11 @@
   },
   "autoload": {
     "psr-4": {
-      "dvc\\chat\\": "src/chat/",
+      "dvc\\chat\\": "src/chat/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
       "": "src/application/app/"
     }
   },
@@ -24,5 +28,4 @@
       "dvc\\chat\\updater::upgrade"
     ]
   }
-
 }
