@@ -9,37 +9,40 @@
 */
 
 namespace dvc\chat;
-use strings;
+
+use bravedave\dvc\strings;
+
 ?>
 
 <h5 class="mb-0">Remote Conversations</h5>
 <p class="text-muted font-italic">only for development purposes ...</p>
 
-<div class="accordion" id="<?= $_accordion = strings::rand()  ?>"></div>
-<script>
-((_) => {
-    let chatBox = ( u) => {
-        fetch( _.url('<?= $this->route ?>/chatbox/<?= users::currentUser() ?>/'+String(u)))
-        .then( data => data.text())
-        .then( html => {
-            let card = $(html);
+<div class="accordion" id="<?= $_accordion = strings::rand() ?>"></div>
+<script type="module">
+  const _ = _brayworth_;
+  const accordion = $('#<?= $_accordion ?>');
 
-            card.attr('data-id', u);
+  const chatBox = u => {
 
-            $('.collapse', card).attr('data-parent', '#<?= $_accordion ?>');
+    const url = _.url('<?= $this->route ?>/chatbox/<?= users::currentUser() ?>/' + String(u));
+    // console.log('chatBox', url);
+    fetch(url)
+      .then(data => data.text())
+      .then(html => {
 
-            $('button[data-role="close"]', card).remove();
+        // console.log(html);
 
+        const card = $(html);
+        card.attr('data-id', u);
 
-            card.appendTo('#<?= $_accordion ?>');
+        card.find('.collapse').attr('data-parent', '#<?= $_accordion ?>');
 
-        });
+        $('button[data-role="close"]', card).remove();
+        card.appendTo('#<?= $_accordion ?>');
+      });
+  }
 
-    }
-
-    chatBox(1);
-    chatBox(2);
-    chatBox(3);
-
-})(_brayworth_);
+  chatBox(1);
+  chatBox(2);
+  chatBox(3);
 </script>

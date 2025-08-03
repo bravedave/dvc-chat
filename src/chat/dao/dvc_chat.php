@@ -9,30 +9,32 @@
 */
 
 namespace dvc\chat\dao;
-use dao\_dao;
 
-class dvc_chat extends _dao {
+use bravedave\dvc\{dao, dto as dvcDTO};
+
+class dvc_chat extends dao {
 	protected $_db_name = 'dvc_chat';
 
-	public function getFor( int $remote, int $local) {
+	public function getFor(int $remote, int $local) {
 		$sql = sprintf(
-      'SELECT * FROM `%s`
+			'SELECT * FROM `%s`
       WHERE `local` IN (%d,%d)
         AND `remote` IN (%d,%d)
       ORDER BY `created` DESC',
 			$this->_db_name,
-      $local,$remote,
-			$remote,$local
+			$local,
+			$remote,
+			$remote,
+			$local
 
 		);
 
 		// \sys::logSQL( $sql);
 
-		return $this->Result( $sql);
+		return $this->Result($sql);
+	}
 
-  }
-
-  public function getRecent( int $local, int $remote, int $limit = 10) : array {
+	public function getRecent(int $local, int $remote, int $limit = 10): array {
 		$_sql = sprintf(
 			'SELECT *
 			FROM `%s`
@@ -41,25 +43,26 @@ class dvc_chat extends _dao {
 			ORDER BY `id` DESC
 			LIMIT %d',
 			$this->_db_name,
-			$local,$remote,
-			$local,$remote,
-			$limit);
+			$local,
+			$remote,
+			$local,
+			$remote,
+			$limit
+		);
 
-		$sql = sprintf( 'CREATE TEMPORARY TABLE _tmp AS %s', $_sql);
+		$sql = sprintf('CREATE TEMPORARY TABLE _tmp AS %s', $_sql);
 		// \sys::logSQL( $sql);
-		$this->Q( $sql);
+		$this->Q($sql);
 
 		$_sql = 'SELECT * FROM _tmp ORDER BY id ASC';
-		if ( $res = $this->Result( $_sql)) {
+		if ($res = $this->Result($_sql)) {
 			return $res->dtoSet();
-
 		}
 
 		return [];
-
 	}
 
-	public function getUnseen( int $remote, int $local) : int {
+	public function getUnseen(int $remote, int $local): int {
 		/**
 		 * local is me, so where I am remote, which ones haven't I seen
 		 * .. so it's reversed ..
@@ -76,24 +79,18 @@ class dvc_chat extends _dao {
 			$this->_db_name,
 			$remote,
 			$local
-
 		);
 
-		// \sys::logSQL( $sql);
+		// logger::sql( $sql);
+		if ($dto = (new dvcDTO)($sql)) {
 
-		if ( $res = $this->Result( $sql)) {
-			if ( $dto = $res->dto()) {
-				return $dto->count;
-
-			}
-
+			return $dto->count ?? 0;
 		}
 
-		return [];
-
+		return 0;
 	}
 
-	public function getUnseenAll( int $local) : array {
+	public function getUnseenAll(int $local): array {
 		/**
 		 * local is me, so where I am remote, which ones haven't I seen
 		 * .. so it's reversed ..
@@ -112,36 +109,32 @@ class dvc_chat extends _dao {
 
 		);
 
-		if ( $res = $this->Result( $sql)) {
+		if ($res = $this->Result($sql)) {
 			return $res->dtoSet();
-
 		}
 
 		return [];
-
 	}
 
-	public function Insert( $a ) {
-		$id = parent::Insert( $a );
-		if ( \config::$DB_CACHE == 'APC') {
+	public function Insert($a) {
+		$id = parent::Insert($a);
+		if (\config::$DB_CACHE == 'APC') {
 			$cache = \dvc\cache::instance();
-			$key = $this->cacheKey( 0, 'version');
-			$cache->set( $key, $id);
-
+			$key = $this->cacheKey(0, 'version');
+			$cache->set($key, $id);
 		}
 
 		return $id;
-
 	}
 
-	public function SeenMark( int $local, int $remote, int $version) {
+	public function SeenMark(int $local, int $remote, int $version) {
 		/**
 		 * local is me, so where I am remote,
 		 * for the local I'm viewing
 		 * I've read these
 		 * .. so it's reversed ..
 		 */
-		$this->Q( sprintf(
+		$this->Q(sprintf(
 			'UPDATE
 				`%s`
 			SET
@@ -156,35 +149,27 @@ class dvc_chat extends _dao {
 			$version
 
 		));
-
 	}
 
 	public function version() {
-		if ( \config::$DB_CACHE == 'APC') {
+		if (\config::$DB_CACHE == 'APC') {
 			$cache = \dvc\cache::instance();
-			$key = $this->cacheKey( 0, 'version');
-			if ( $v = $cache->get( $key)) {
-				return ( $v);
-
+			$key = $this->cacheKey(0, 'version');
+			if ($v = $cache->get($key)) {
+				return ($v);
 			}
-
 		}
 
-		if ( $res = $this->Result( sprintf( 'SELECT `id` FROM `%s` ORDER BY `id` DESC LIMIT 1', $this->_db_name))) {
-			if ( $dto = $res->dto()) {
-				if ( \config::$DB_CACHE == 'APC') {
-					$cache->set( $key, $dto->id);
-
+		if ($res = $this->Result(sprintf('SELECT `id` FROM `%s` ORDER BY `id` DESC LIMIT 1', $this->_db_name))) {
+			if ($dto = $res->dto()) {
+				if (\config::$DB_CACHE == 'APC') {
+					$cache->set($key, $dto->id);
 				}
 
 				return $dto->id;
-
 			}
-
 		}
 
 		return 0;
-
 	}
-
 }
