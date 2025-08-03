@@ -1,8 +1,9 @@
-## Chat
+# Chat
 
 Just an iDEA
 
 ## Concepts
+
 * Remotes are other people I am talking to
 * Local is me and I am Talking to Remotes
 
@@ -15,5 +16,6 @@ Just an iDEA
 3. A control to _start_ chats in the form of a context menu
 
 ## Mitigation
+
 * of course we want the chat as fast as possible, but it falls back to checking every 15 seconds... if we become active, it checks every second ... and then falls back
 * we use document.hasFocus to check if the document is active, backgrounded windows don't check ...

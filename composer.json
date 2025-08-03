@@ -20,12 +20,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "": "src/application/app/"
+      "": "src/app/"
     }
-  },
-  "scripts": {
-    "post-update-cmd": [
-      "dvc\\chat\\updater::upgrade"
-    ]
   }
 }
