@@ -1,26 +1,34 @@
 {
-  "name": "bravedave/dvc-chat",
-  "description": "Simple Chat iDEA",
-  "minimum-stability": "dev",
-  "prefer-stable": true,
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Dave Bray",
-      "email": "david@brayworth.com.au"
+    "name": "bravedave/dvc-chat",
+    "description": "Simple Chat iDEA",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dave Bray",
+            "email": "david@brayworth.com.au"
+        }
+    ],
+    "require": {
+        "bravedave/dvc": "*",
+        "matthiasmullie/scrapbook": "^1.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "dvc\\chat\\": "src/chat/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "": "src/app/"
+        }
+    },
+    "scripts": {
+        "start": [
+            "Composer\\Config::disableProcessTimeout",
+            "echo \"this application is available at http://localhost:8000\"",
+            "php -S 127.0.0.1:8000 public/_mvp.php"
+        ]
     }
-  ],
-  "require": {
-    "bravedave/dvc": "*"
-  },
-  "autoload": {
-    "psr-4": {
-      "dvc\\chat\\": "src/chat/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "": "src/app/"
-    }
-  }
 }

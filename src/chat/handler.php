@@ -10,11 +10,15 @@
 
 namespace dvc\chat;
 
-use bravedave\dvc\{json, push, ServerRequest};
+use bravedave\dvc\{json, logger, push, ServerRequest};
+use Fiber;
 
 final class handler {
 
   public static function get(ServerRequest $request): json {
+
+    // Release the session file lock
+    session_write_close();
 
     $action = $request('action');
     $remote = (int)$request('remote');
@@ -23,6 +27,32 @@ final class handler {
     if ($local) users::touch($local);
 
     $version = (int)$request('version');
+    $start = time();
+    $fiber = new Fiber(function () use ($version) {
+      $dao = new dao\dvc_chat;
+      $_version = $dao->version();
+      if ($_version > $version) return;
+      while (true) {
+        Fiber::suspend();
+        $_version = $dao->version();
+        if ($_version > $version) return;
+      }
+    });
+
+    $started = false;
+    while (true) {
+      if (!$started) {
+        $fiber->start();
+        $started = true;
+      } else {
+        $fiber->resume();
+      }
+
+      if ($fiber->isTerminated()) break;
+
+      if ((time() - $start) >= config::fibre_wait_interval) break;
+      sleep(config::fibre_sleep_interval);
+    }
 
     $dao = new dao\dvc_chat;
     $_version = $dao->version();
@@ -45,17 +75,90 @@ final class handler {
 
   public static function getUnseen(ServerRequest $request): json {
 
+    $debug = false;
+    // $debug = true;
+
+    // Release the session file lock
+    session_write_close();
 
     $action = $request('action');
     $local = (int)$request('local');
+    $version = (int)$request('version');
 
     if ($local) users::touch($local);
 
     $dao = new dao\dvc_chat;
-    $_version = $dao->version();
+
+    $start = time();
+    $fiber = new Fiber(function () use ($dao, $version) {
+      // initial check
+      $_version = $dao->version();
+      if ($_version > $version) {
+        return [
+          'version' => $_version,
+          'unseen'  => $dao->getUnseenAll(users::currentUser())
+        ];
+      }
+      // wait to be resumed until version changes
+      while (true) {
+        Fiber::suspend();
+        $_version = $dao->version();
+        if ($_version > $version) {
+          return [
+            'version' => $_version,
+            'unseen'  => $dao->getUnseenAll(users::currentUser())
+          ];
+        }
+      }
+    });
+
+    /**
+     * drive the fibre, retrying (non-blocking inside the fibre) for up
+     * to config::fibre_wait_interval seconds
+     * resume the fibre periodically so other work could run between resumes
+     */
+    $result = null;
+    $started = false;
+    while (true) {
+
+      if (! $started) {
+        $fiber->start();
+        $started = true;
+      } else {
+        $fiber->resume();
+      }
+
+      if ($fiber->isTerminated()) {
+        $result = $fiber->getReturn();
+        break;
+      }
+
+      if ((time() - $start) >= config::fibre_wait_interval) {
+
+        // timeout - return current state
+        $_version = $dao->version();
+        $result = [
+          'version' => $_version,
+          'unseen'  => $dao->getUnseenAll(users::currentUser())
+        ];
+        break;
+      }
+
+      // small pause before next resume (keeps this loop lightweight)
+      sleep(config::fibre_sleep_interval);
+    }
+
+    if ($debug) logger::debug(sprintf(
+      '<%s %s %s> %s',
+      $version,
+      $version == $result['version'] ? '==' : '!=',
+      $result['version'],
+      logger::caller()
+    ));
 
     return json::ack($action)
-      ->add('unseen', $dao->getUnseenAll(users::currentUser()));
+      ->add('unseen', $result['unseen'])
+      ->add('version', $result['version']);
   }
 
   public static function getUsers(ServerRequest $request): json {
@@ -66,6 +169,9 @@ final class handler {
   }
 
   public static function post(ServerRequest $request): json {
+
+    logger::info(sprintf('<%s> %s', 'got post ..', logger::caller()));
+
 
     $action = $request('action');
     $local = (int)$request('local');
@@ -83,6 +189,8 @@ final class handler {
     $dao->SeenMark($local, $remote, $id);
 
     if (push::enabled()) push::send($a['message'], $remote);
+
+    logger::info(sprintf('<%s> %s', 'done post ..', logger::caller()));
     return json::ack($action);
   }
 

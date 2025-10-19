@@ -56,7 +56,7 @@ $sendOnEnter = true;
 
   <div class="collapse fade" id="<?= $_collapse ?>">
     <form id="<?= $_form = strings::rand() ?>">
-      <input type="hidden" name="action" value="post" />
+      <input type="hidden" name="action" value="<?= config::post_post ?>" />
       <input type="hidden" name="remote" value="<?= $remote->id ?>" />
       <input type="hidden" name="local" value="<?= $local->id ?>" />
       <input type="hidden" name="version" value="0" />

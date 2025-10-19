@@ -62,33 +62,35 @@ use bravedave\dvc\{push, strings};
       }
     };
 
+    let unseenVersion = 0;
     const f = () => {
 
       if (document.hasFocus()) {
 
         const payload = {
-          action: 'get-unseen',
-          local: 0
+          action: '<?= config::post_get_unseen ?>',
+          local: 0,
+          version: unseenVersion
         };
 
         _.fetch.post(_.url('chat'), payload).then(d => {
 
           if ('ack' == d.response) {
 
+            unseenVersion = d.version;
             $.each(d.unseen, (i, unseen) => {
 
               if (Number(unseen.count) > 0) chatBox(unseen.local);
             });
 
-            // console.table( d.unseen);
+            // console.log( d.unseen, unseenVersion, d);
           }
 
-          setTimeout(f, 10000);
+          setTimeout(f, 5000);
         });
-
       } else {
 
-        setTimeout(f, 10000);
+        setTimeout(f, 5000);
       }
     };
 
@@ -98,7 +100,7 @@ use bravedave\dvc\{push, strings};
       e.stopPropagation();
 
       const payload = {
-        action: 'get-users'
+        action: '<?= config::post_get_users ?>'
       };
 
       _.fetch.post(_.url('chat'), payload).then(d => {

@@ -30,10 +30,10 @@ class controller extends \Controller {
 		$action = $request('action');
 
 		return match ($action) {
-			'get' => handler::get($request),
-			'get-unseen' => handler::getUnseen($request),
-			'get-users' => handler::getUsers($request),
-			'post' => handler::post($request),
+			config::post_get => handler::get($request),
+			config::post_get_unseen => handler::getUnseen($request),
+			config::post_get_users => handler::getUsers($request),
+			config::post_post => handler::post($request),
 			'seen-mark' => handler::seenMark($request),
 			default => parent::postHandler()
 		};
@@ -72,16 +72,15 @@ class controller extends \Controller {
 		}
 	}
 
-  public function js(string $lib = '') {
+	public function js(string $lib = '') {
 
-		if ( 'chatworker' == $lib) {
+		if ('chatworker' == $lib) {
 
 			Response::serve(__DIR__ . '/chat-worker.js');
 		} else {
 
-			parent::js( $lib);
+			parent::js($lib);
 		}
-
 	}
 
 	public function report($remote = 0) {
@@ -92,7 +91,7 @@ class controller extends \Controller {
 			if ($user = users::getUser($remote)) {
 				$this->data = (object)[
 					'remote' => $user,
-					'dtoSet' => $dao->dtoSet($dao->getFor(users::currentUser(), $remote)),
+					'dtoSet' => $dao->getFor(users::currentUser(), $remote),
 					'title' => $this->title = $user->name,
 				];
 

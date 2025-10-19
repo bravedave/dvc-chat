@@ -17,6 +17,13 @@ class config extends baseConfig {
 	const dvcchat_db_version = 1;
 	const label = 'Chat';
 
+	const fibre_wait_interval = 10; // seconds
+	const fibre_sleep_interval = 1; // seconds
+	const post_get = 'get';
+	const post_get_unseen = 'get-unseen';
+	const post_get_users = 'get-users';
+	const post_post = 'post';
+
 	static function checkdatabase() {
 
 		$dao = new dao\dbinfo(null, method_exists(__CLASS__, 'cmsStore') ? self::cmsStore() : self::dataPath());

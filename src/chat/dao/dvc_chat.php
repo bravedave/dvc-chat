@@ -10,12 +10,13 @@
 
 namespace dvc\chat\dao;
 
-use bravedave\dvc\{dao, dto as dvcDTO};
+use bravedave\dvc\{cache, dao, dto as dvcDTO, dtoSet, logger};
+use dvc\chat\config;
 
 class dvc_chat extends dao {
 	protected $_db_name = 'dvc_chat';
 
-	public function getFor(int $remote, int $local) {
+	public function getFor(int $remote, int $local) : array {
 		$sql = sprintf(
 			'SELECT * FROM `%s`
       WHERE `local` IN (%d,%d)
@@ -26,16 +27,15 @@ class dvc_chat extends dao {
 			$remote,
 			$remote,
 			$local
-
 		);
 
 		// \sys::logSQL( $sql);
 
-		return $this->Result($sql);
+		return (new dtoSet)($sql);
 	}
 
 	public function getRecent(int $local, int $remote, int $limit = 10): array {
-		$_sql = sprintf(
+		$sql = sprintf(
 			'SELECT *
 			FROM `%s`
 			WHERE `local` IN (%d,%d)
@@ -50,16 +50,13 @@ class dvc_chat extends dao {
 			$limit
 		);
 
-		$sql = sprintf('CREATE TEMPORARY TABLE _tmp AS %s', $_sql);
-		// \sys::logSQL( $sql);
-		$this->Q($sql);
+		$dtoSet = (new dtoSet)($sql);
+		// logger::dump($dtoSet);
 
-		$_sql = 'SELECT * FROM _tmp ORDER BY id ASC';
-		if ($res = $this->Result($_sql)) {
-			return $res->dtoSet();
-		}
-
-		return [];
+		// reverse the order
+		usort($dtoSet, fn($a, $b) => $a->id <=> $b->id);
+		// logger::dump($dtoSet);
+		return $dtoSet;
 	}
 
 	public function getUnseen(int $remote, int $local): int {
@@ -106,20 +103,17 @@ class dvc_chat extends dao {
 			GROUP by `local`',
 			$this->_db_name,
 			$local
-
 		);
 
-		if ($res = $this->Result($sql)) {
-			return $res->dtoSet();
-		}
-
-		return [];
+		return (new dtoSet)($sql);
 	}
 
 	public function Insert($a) {
+
 		$id = parent::Insert($a);
-		if (\config::$DB_CACHE == 'APC') {
-			$cache = \dvc\cache::instance();
+		if (config::$DB_CACHE == 'APC') {
+
+			$cache = cache::instance();
 			$key = $this->cacheKey(0, 'version');
 			$cache->set($key, $id);
 		}
@@ -135,39 +129,33 @@ class dvc_chat extends dao {
 		 * .. so it's reversed ..
 		 */
 		$this->Q(sprintf(
-			'UPDATE
-				`%s`
-			SET
-				`seen` = 1
-			WHERE
-				`local` = %d
-				AND `remote` = %d
-				AND `id` <= %d',
+			'UPDATE `%s` SET `seen` = 1
+			WHERE `local` = %d AND `remote` = %d AND `id` <= %d',
 			$this->_db_name,
 			$remote,
 			$local,
 			$version
-
 		));
 	}
 
 	public function version() {
-		if (\config::$DB_CACHE == 'APC') {
-			$cache = \dvc\cache::instance();
+
+		if (config::$DB_CACHE == 'APC') {
+
+			$cache = cache::instance();
 			$key = $this->cacheKey(0, 'version');
-			if ($v = $cache->get($key)) {
-				return ($v);
-			}
+			if ($v = $cache->get($key)) return ($v);
 		}
 
-		if ($res = $this->Result(sprintf('SELECT `id` FROM `%s` ORDER BY `id` DESC LIMIT 1', $this->_db_name))) {
-			if ($dto = $res->dto()) {
-				if (\config::$DB_CACHE == 'APC') {
-					$cache->set($key, $dto->id);
-				}
+		$sql = sprintf('SELECT `id` FROM `%s` ORDER BY `id` DESC LIMIT 1', $this->_db_name);
+		if ($dto = (new dvcDTO)($sql)) {
 
-				return $dto->id;
+			if (config::$DB_CACHE == 'APC') {
+
+				$cache->set($key, $dto->id);
 			}
+
+			return $dto->id;
 		}
 
 		return 0;

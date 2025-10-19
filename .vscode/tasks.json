@@ -2,7 +2,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "🚀 Launch Dev Server",
+            "label": "\ud83d\ude80 Launch Dev Server",
             "type": "shell",
             "command": "vendor/bin/dvc serve --port=8010",
             "problemMatcher": [],
@@ -13,14 +13,16 @@
             }
         },
         {
-            "label": "$(sync) Composer Update",
+            "label": "Composer Update",
             "type": "shell",
             "command": "composer update",
             "problemMatcher": [],
+            "icon": {
+                "id": "sync"
+            },
             "presentation": {
                 "reveal": "always",
-                "panel": "shared",
-                "focus": true
+                "panel": "new"
             }
         }
     ]
